@@ -1,15 +1,15 @@
+
 from scipy.spatial import distance as dist
 from imutils.video import FileVideoStream
 from imutils.video import VideoStream
 from imutils import face_utils
-import argparse
 import imutils
 import time
 import dlib
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QDialog, QMessageBox, QFileDialog, QComboBox, QTableWidget
 from PyQt5.QtCore import QSequentialAnimationGroup, QTimer, QTime , Qt, QDate, QDateTime, QRect
-from PyQt5.QtGui import QIcon, QImage, QPixmap, QBrush, QPainter,QWindow, QImage, QPixmap
+from PyQt5.QtGui import QIcon, QImage, QPixmap, QImage, QPixmap
 from PyQt5.uic import loadUi
 import sys
 import os 
@@ -23,6 +23,8 @@ import numpy as np
 import face_recognition 
 from numpy.lib.function_base import append
 import csv
+
+
 
 
 # https://www.programiz.com/python-programming/datetime/strptime 
@@ -124,6 +126,7 @@ class ManualAttendance(QMainWindow):
     self.mainappwindow = MainAppWindow( self.user )
 
     widget.addWidget(self.mainappwindow)
+    widget.setWindowTitle('Attendance System') 
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -154,7 +157,7 @@ class ShowAttendance(QMainWindow):
     self.selected_date = ""
     self.selected_month = ""
     self.selected_year = ""
-    self.selected_course_code = ""
+    self.selected_course_code = "Click to select"
     
     conn = sqlite3.connect("Attendance_System.db")
     cc = conn.cursor()
@@ -187,24 +190,19 @@ class ShowAttendance(QMainWindow):
 
     self.tableWidget.setColumnWidth(0,130)
     self.tableWidget.setColumnWidth(1,130)
-    # self.tableWidget.setColumnWidth(2,100)
-    # self.tableWidget.setGeometry(10,20)
+
     self.cal.clicked.connect( self.getDate )
     self.show_data_btn.clicked.connect( self.load_data )
     self.show_data_btn_2.clicked.connect( self.load_count )
     self.export_csv_btn.clicked.connect( self.export_csv_func )
     self.backtodashboard_btn.clicked.connect( self.gobacktodashboard )
     
-    
-    # WORK
-    # self.select_date_comboBox
-    # self.select_courseCode_comboBox
-
 
   def load_count(self):
+        self.tableWidget.clear()
         fields = [ "Roll No.", "Total_Count"]
         self.tableWidget.setHorizontalHeaderLabels(fields)
-        self.tableWidget.clear()
+        
         conn = sqlite3.connect("Attendance_System.db")
         cc = conn.cursor()
         data22 = [ self.selected_course_code]
@@ -233,10 +231,9 @@ class ShowAttendance(QMainWindow):
         if ( number_of_rows_fetched == 0 ):
             print('[LOG] fetched',number_of_rows_fetched, "row(s)" )
             self.show_data_lbl.setText("No Data to fetch for given info")
-            if ( self.selected_course_code!="Click to select" ):
-                self.show_data_lbl.setText("Please select course code")
-                
-                self.tableWidget.setRowCount( 0 )
+            # if ( self.selected_course_code!="Click to select" ):
+            #     self.show_data_lbl.setText("Please select course code")
+            #     self.tableWidget.setRowCount( 0 )
 
         else:
           m = cc.execute("SELECT * FROM Atten where course_no=?", data22)
@@ -260,24 +257,18 @@ class ShowAttendance(QMainWindow):
             print("roll: ")
             print(roll)
             timing = arr[roll]
-            print("timing:")
+            print("count:")
             print(timing)
             prpr = str(timing)
             if roll_check[roll] == 0:
               self.tableWidget.setItem( tableindex, 0, QtWidgets.QTableWidgetItem(  roll2  ) )
               self.tableWidget.setItem(tableindex, 1, QtWidgets.QTableWidgetItem(  prpr  ) )
-            tableindex += 1
+              tableindex += 1
             roll_check[roll] += 1
           self.show_data_lbl.setText("Success")
           
-        
-
-
-          
         conn.commit()
         conn.close()
-
-
 
   def export_csv_func(self):
       if ( self.selected_course_code!="Click to select" ):
@@ -331,10 +322,10 @@ class ShowAttendance(QMainWindow):
     self.selected_course_code = self.selected_course_code
 
   def load_data(self):
-    fields = [ "Roll No.", "Time"]
-
-    self.tableWidget.setHorizontalHeaderLabels(fields)
     self.tableWidget.clear()
+    fields = [ "Roll No.", "Time"]
+    self.tableWidget.setHorizontalHeaderLabels(fields)
+    
     if ( self.selected_course_code!="Click to select" ):
       
       conn = sqlite3.connect("Attendance_System.db")
@@ -343,7 +334,6 @@ class ShowAttendance(QMainWindow):
       # print( data22)  
       m = cc.execute("SELECT * FROM Atten where (course_no,date,mon,year)=(?,?,?,?)", data22)
 
-      # FEROT 
       number_of_rows_fetched = 0 
       for i in m:
         number_of_rows_fetched += 1
@@ -352,9 +342,14 @@ class ShowAttendance(QMainWindow):
       if ( number_of_rows_fetched == 0 ):
           print('[LOG] fetched',number_of_rows_fetched, "row(s)" )
           self.show_data_lbl.setText("No Data to fetch for given info")
-          if ( self.selected_course_code!="Click to select" ):
-              self.show_data_lbl.setText("Please select course code")
-              self.tableWidget.setRowCount( 0 )
+          
+          self.tableWidget.clear()
+          fields = [ "Roll No.", "Total_Count"]
+          self.tableWidget.setHorizontalHeaderLabels(fields)
+
+          # if ( self.selected_course_code!="Click to select" ):
+          #     self.show_data_lbl.setText("Please select course code")
+          #     self.tableWidget.setRowCount( 0 )
 
       else:
         m = cc.execute("SELECT * FROM Atten where (course_no,date,mon,year)=(?,?,?,?)", data22)
@@ -379,6 +374,7 @@ class ShowAttendance(QMainWindow):
     self.mainappwindow = MainAppWindow( self.user )
 
     widget.addWidget(self.mainappwindow)
+    widget.setWindowTitle('Attendance System') 
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -389,9 +385,9 @@ class MarkAttendance(QMainWindow):
     super(MarkAttendance,self).__init__()
     loadUi('UI/markattendance.ui',self)
 
+    self.user = user
     self.logic = 0
     self.cam_is_on = False
-    self.user = user
 
     conn = sqlite3.connect("Attendance_System.db")
     cc = conn.cursor()
@@ -406,7 +402,6 @@ class MarkAttendance(QMainWindow):
             pth text
         )
     """)
-
 
     data22 = user['email'] 
     cc.execute("SELECT course_no FROM Course_Alloc WHERE email=?", [data22] )
@@ -443,10 +438,8 @@ class MarkAttendance(QMainWindow):
 
     self.course_code_cbox.addItem("Click to select")
     # *** IMPORTANT ***
-    # self.course_code_cbox.addItems(self.course_code_list) # fetched from db 
     self.course_code_cbox.addItems(folders) # fetched from os.listdir() if downloaded
     
-
     self.img_label.setText("")
     self.backtodashboard_btn.clicked.connect( self.gobacktodashboard )
 
@@ -480,7 +473,6 @@ class MarkAttendance(QMainWindow):
           self.classNames.append(os.path.splitext(cl)[0] )
       except:
           print('[LOG] select coursse code')
-
     
       # self.images = []
       # self.classNames = []
@@ -492,7 +484,8 @@ class MarkAttendance(QMainWindow):
       self.markattendance_err_label.setText("Stopped Taking Attendance...")
 
   def showwebcam_btn_function(self):
-    if ( self.course_code!="Click to select" ):
+    if ( self.course_code!="Click to select" and self.course_code!="" ):
+        print(self.course_code)
         print('[LOG] Encoding START')
 
         # now = datetime.datetime.now()
@@ -523,8 +516,6 @@ class MarkAttendance(QMainWindow):
           # return the eye aspect ratio
           return ear
 
-
-
         EYE_AR_THRESH = 0.3
         EYE_AR_CONSEC_FRAMES = 3
         COUNTER = 0
@@ -550,7 +541,7 @@ class MarkAttendance(QMainWindow):
         csv_created = False
         arr = []
         for i in range(125):
-                    arr.append(0)
+                arr.append(0)
         count = 0
         # while ( cap.isOpened() ):
         while ( self.logic == 0 ):
@@ -561,9 +552,6 @@ class MarkAttendance(QMainWindow):
             self.markattendance_err_label.setText("Taking Attendance...")
 
             self.display_the_img(frame,1)
-
-
-
 
             frame2 = cv.resize(frame,(0,0),None, 0.25,0.25)
             gray = cv.cvtColor(frame2, cv.COLOR_BGR2GRAY)
@@ -592,9 +580,6 @@ class MarkAttendance(QMainWindow):
                   cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
          
 
-
-
-
             imgSmall = cv.resize(frame,(0,0),None, 0.25,0.25)
             imgSmall = cv.cvtColor(imgSmall, cv.COLOR_BGR2RGB)
 
@@ -605,7 +590,8 @@ class MarkAttendance(QMainWindow):
               faceDistance = face_recognition.face_distance(encodeListKnown,encodeFace)
               #print(faceDistance) # the lesser the distance the best match it is 
               matchIndex = np.argmin(faceDistance)
-            
+              # print("Matches:")
+              # print(matches)
               if matches[matchIndex]:
                   classNames = self.classNames
                   s_name = classNames[ matchIndex ]
@@ -624,7 +610,7 @@ class MarkAttendance(QMainWindow):
                   mon = now.strftime('%m').strip()
                   year = now.strftime('%Y')
                   mon2 = mon
-                  day2 = day
+                  # day2 = day
 
                   if mon2[0]=='0':
                     mon3 = mon2[1]
@@ -632,13 +618,6 @@ class MarkAttendance(QMainWindow):
                   if day[0] == '0':
                     day3 = day[1]
                     day=day3
-
-                  
-
-                  
-                  
-                    
-
         
                   y1, x2, y2, x1 = faceLoc
                   y1, x2, y2, x1 = y1*4, x2*4, y2*4, x1*4
@@ -647,8 +626,7 @@ class MarkAttendance(QMainWindow):
                   cv.putText(frame,name,(x1+6,y2-6),cv.FONT_HERSHEY_COMPLEX,1,(255,255,255),2)
 
                   self.display_the_img(frame,1)
-      
-                  # self.markAttendance(name, csv_filename)
+
                   if TOTAL >= 2:
                     conn = sqlite3.connect("Attendance_System.db")
                     cc = conn.cursor()
@@ -672,7 +650,6 @@ class MarkAttendance(QMainWindow):
           k = cv.waitKey(1)
 
             # if( self.logic == 2 ):
-
             
             # if   k%256 == ord('p'):
           if  self.logic == 3 :
@@ -700,7 +677,7 @@ class MarkAttendance(QMainWindow):
     image = cv.resize(img, (320, 240))
 
     # https://doc.qt.io/qt-5/qimage.html#Format-enum
-    ########### BUJHI NAI EGLA NICHER LINES ... SEE THIS LINK
+    
 
     qformat = QImage.Format_Indexed8
     if len(image.shape) == 3:
@@ -713,14 +690,14 @@ class MarkAttendance(QMainWindow):
     self.img_label.setPixmap(QPixmap.fromImage(outImage))
     self.img_label.setScaledContents(True)
 
-  def on_combobox_text_change_func(self, course_code):
+  # def on_combobox_text_change_func(self, course_code):
     # if (course_code != "Click to select"):
     #   self.course_code = course_code
     #   self.markattendance_err_label.setText("")
     # else:
     #   print("[LOG] select course code first")
     #   self.markattendance_err_label.setText("Please Choose the Course Code first")
-    pass
+    # pass
 
   def gobacktodashboard(self):
     self.logic = 3
@@ -730,10 +707,11 @@ class MarkAttendance(QMainWindow):
     self.mainappwindow = MainAppWindow( self.user )
 
     widget.addWidget(self.mainappwindow)
+    widget.setWindowTitle('Attendance System') 
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
-    print('[LOG] ' +self.user['email'] + ' went back to the dashboard successfully' )
+    print('[LOG] ' + self.user['email'] + ' went back to the dashboard successfully' )
 
   def findEncodings(self, images ):
     encodeList = []
@@ -745,35 +723,35 @@ class MarkAttendance(QMainWindow):
     print('[LOG] Encoding in progress ... ')
     return encodeList
   
-  def markAttendance(self, name, csv_filename):
+  # def markAttendance(self, name, csv_filename):
 
-    now = datetime.datetime.now()
-    day = now.strftime('%d').strip()
-    mon = now.strftime('%m').strip()
-    year = now.strftime('%Y')
+  #   now = datetime.datetime.now()
+  #   day = now.strftime('%d').strip()
+  #   mon = now.strftime('%m').strip()
+  #   year = now.strftime('%Y')
 
-    with open(f'{csv_filename}.csv','r+') as f:
+  #   with open(f'{csv_filename}.csv','r+') as f:
 
-      myDataList = f.readlines()
-      namelist = []
-      for line in myDataList:
-        entry = line.split(',')
-        namelist.append(entry[0])
-      if name not in namelist:
-        self.row_count+=1
-        now = datetime.datetime.now()
-        TIMEString = now.strftime('%I:%M:%S')
-        f.writelines(f'\n{self.row_count},{name},{TIMEString}')
+  #     myDataList = f.readlines()
+  #     namelist = []
+  #     for line in myDataList:
+  #       entry = line.split(',')
+  #       namelist.append(entry[0])
+  #     if name not in namelist:
+  #       self.row_count+=1
+  #       now = datetime.datetime.now()
+  #       TIMEString = now.strftime('%I:%M:%S')
+  #       f.writelines(f'\n{self.row_count},{name},{TIMEString}')
 
-        data = (name, self.course_code ,day,mon,year,TIMEString)
+  #       data = (name, self.course_code ,day,mon,year,TIMEString)
 
-        conn = sqlite3.connect("Attendance_System.db")
-        cc = conn.cursor()
-        # data = (roll,course_no,date,mon,year,pth)
+  #       conn = sqlite3.connect("Attendance_System.db")
+  #       cc = conn.cursor()
+  #       # data = (roll,course_no,date,mon,year,pth)
 
-        cc.execute("INSERT INTO Atten VALUES(?,?,?,?,?,?)", data)
-        conn.commit()
-        conn.close()
+  #       cc.execute("INSERT INTO Atten VALUES(?,?,?,?,?,?)", data)
+  #       conn.commit()
+  #       conn.close()
 
 
 
@@ -897,8 +875,8 @@ class MainAppWindow(QMainWindow):
               rec_data= x[3]
               cc = str(c)
               c+=1
-              print("Eije: ")
-              print(cc)
+              #print("Eije: ")
+              #print(cc)
               with open(self.selected_course_code+'/'+ roll+'_'+ cc +'.jpg', 'wb') as f:
                   f.write(rec_data) 
 
@@ -927,6 +905,7 @@ class MainAppWindow(QMainWindow):
   def goto_add_manually(self):
     
     showAttendance = ManualAttendance(self.u)
+    widget.setWindowTitle('Manual Attendance') 
     widget.addWidget(showAttendance)
     widget.setFixedSize(780,590)
     widget.setCurrentIndex( widget.currentIndex()+1 )
@@ -934,6 +913,7 @@ class MainAppWindow(QMainWindow):
   def gotoshow_attendance(self):
     # if there is atleast one csv file inh attendance then you are allowed to go o/w it gives error
     showAttendance = ShowAttendance(self.u)
+    widget.setWindowTitle('View Attendance') 
     widget.addWidget(showAttendance)
     widget.setFixedSize(780,590)
     widget.setCurrentIndex( widget.currentIndex()+1 )
@@ -952,6 +932,7 @@ class MainAppWindow(QMainWindow):
   def gotomarkattendance(self):
 
     markattendance = MarkAttendance(self.u)
+    widget.setWindowTitle('Take Attendance') 
     widget.addWidget(markattendance)
     widget.setFixedSize(780,590)
     
@@ -969,6 +950,7 @@ class MainAppWindow(QMainWindow):
   
       login = Login()
       widget.addWidget(login)
+      widget.setWindowTitle('Login') 
       widget.setFixedSize(470,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
       print('[LOG] ' + self.u['email'] + ' logged out')
@@ -989,11 +971,6 @@ class MainAppWindow(QMainWindow):
     msg.buttonClicked.connect(self.logout_confirmation)
 	
     retval = msg.exec_()
-
-
-
-
-
 
 class RegisterStudentsViaAdmin(QMainWindow):
   def __init__(self,user):
@@ -1017,27 +994,10 @@ class RegisterStudentsViaAdmin(QMainWindow):
     self.showwebcam_btn.clicked.connect( self.showwebcam_btn_function )
     self.stop_webcam_btn.clicked.connect( self.stop_webcam_btn_function )
     self.capture_btn.clicked.connect( self.capture_btn_function )
-    self.submit_btn.clicked.connect( self.submitRegistration ) 
+    #self.submit_btn.clicked.connect( self.submitRegistration ) 
     self.bulk_btn.clicked.connect( self.bulk )
-    #self.ulk.clicked.connect( self.bulk_reg )
-
-    
-
-    
 
         # ALL DEPARTMENT DB THEKE FETCH
-    
-    
-                
-
-  
-
-
-    
-
-    
-
-    
     
     # self.comboBox.setPlaceholderText("Select Department")        KAAJ KORE NA :(
     
@@ -1047,10 +1007,10 @@ class RegisterStudentsViaAdmin(QMainWindow):
 
 
   def bulk(self):
-        print("GG")
+
         # WE CAN CHOOSE A CSV FILE FROM OUR HARD DISK VIA THIS FUNCTION 
-        fname_tuple = QFileDialog.getOpenFileName(self, 'Open file', 'D:\hello', ' ( *.csv)') # this is the default directory 
-        filename = fname_tuple[0] # WITHOUT EXTENSION
+        fname_tuple = QFileDialog.getOpenFileName(self, 'Open file', 'D:\ms-excel', ' ( *.csv)') # this is the default directory 
+        filename = fname_tuple[0] # WITHOUT EXTENSION 
         
         try :
             with open(filename, mode ='r')as file:
@@ -1209,7 +1169,7 @@ class RegisterStudentsViaAdmin(QMainWindow):
     image = cv.resize(img, (320, 240))
 
     # https://doc.qt.io/qt-5/qimage.html#Format-enum
-    ########### BUJHI NAI EGLA NICHER LINES ... SEE THIS LINK
+    
 
     qformat = QImage.Format_Indexed8
     if len(image.shape) == 3:
@@ -1332,6 +1292,7 @@ class RegisterStudentsViaAdmin(QMainWindow):
     adminDashboard = AdminDashboard()
 
     widget.addWidget(adminDashboard)
+    widget.setWindowTitle('Admin Section')
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -1588,6 +1549,7 @@ class SetCourse(QMainWindow):
       adminDashboard = AdminDashboard()
 
       widget.addWidget(adminDashboard)
+      widget.setWindowTitle('Admin Section')
       widget.setFixedSize(770,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -1905,6 +1867,7 @@ class AddCourse(QMainWindow):
     adminDashboard = AdminDashboard()
 
     widget.addWidget(adminDashboard)
+    widget.setWindowTitle('Admin Section')
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -1935,6 +1898,7 @@ class AdminDashboard(QMainWindow):
   def gotosetcourse(self):
 
     setCourse = SetCourse()
+    widget.setWindowTitle('Assign Course')
     widget.addWidget(setCourse)
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
@@ -1942,6 +1906,7 @@ class AdminDashboard(QMainWindow):
   def gotoaddcourse(self):
 
     addCourse = AddCourse()
+    widget.setWindowTitle('Course Management')
     widget.addWidget(addCourse)
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
@@ -1949,6 +1914,7 @@ class AdminDashboard(QMainWindow):
   def gotoregisterstudents(self):
 
     registerStudents = RegisterStudentsViaAdmin(self.u)
+    widget.setWindowTitle('Register Students')
     widget.addWidget(registerStudents)
     widget.setFixedSize(780,590)
     widget.setCurrentIndex(widget.currentIndex()+1)
@@ -1960,6 +1926,7 @@ class AdminDashboard(QMainWindow):
     if ( i.text() == "OK" ):
   
       login = Login()
+      widget.setWindowTitle('Login')
       widget.addWidget(login)
       widget.setFixedSize(470,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
@@ -1983,19 +1950,21 @@ class AdminLogin(QMainWindow):
     loadUi('UI/adminlogin.ui',self)
 
     
-    self.fixedEmail = "systemproject3200@gmail.com"
+    self.fixedEmail = "sysproject3200@gmail.com"
     self.login_btn.clicked.connect(self.adminLogin)
     self.change_pass_btn.clicked.connect(self.change_pass)
     self.backtologin_btn.clicked.connect( self.backtologinFunction )
 
   def backtologinFunction(self):
       login = Login()
+      widget.setWindowTitle('Login')
       widget.addWidget(login)
       widget.setFixedSize(470,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
 
   def gotoAdminDashboard(self):
       adminDashboard = AdminDashboard()
+      widget.setWindowTitle('Admin Section')
       widget.addWidget(adminDashboard)
       widget.setFixedSize(770,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
@@ -2007,7 +1976,7 @@ class AdminLogin(QMainWindow):
         if( email!="" and email==self.fixedEmail and password!="" ):
 
             try:
-                user = fba.authentication.sign_in_with_email_and_password(email, password)
+                # user = fba.authentication.sign_in_with_email_and_password(email, password)
                 print('[LOG] admin log in successful ')
                 self.gotoAdminDashboard()
 
@@ -2022,6 +1991,7 @@ class AdminLogin(QMainWindow):
               elif( error == "INVALID_PASSWORD" ): 
                   print("[LOG] invalid password") 
                   self.login_info.setText('Please enter correct password')
+                  print(password, email)
               else :
                 print(error)
      
@@ -2068,6 +2038,7 @@ class Login(QMainWindow):
     AdminLoginWindow = AdminLogin()
     widget.addWidget(AdminLoginWindow)
     #  CHANGE THE SIZE OF THE MAIN WINDOW
+    widget.setWindowTitle('Admin Login') 
     widget.setFixedSize(470,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -2097,6 +2068,7 @@ class Login(QMainWindow):
     SignUpWindow = SignUp()
     widget.addWidget(SignUpWindow)
     #  CHANGE THE SIZE OF THE MAIN WINDOW
+    widget.setWindowTitle('Sign up') 
     widget.setFixedSize(540,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -2107,6 +2079,7 @@ class Login(QMainWindow):
     self.mainappwindow = MainAppWindow(user)
     # self.mainappwindow.welcome_label.setText(user['email'])
     widget.addWidget(self.mainappwindow)
+    widget.setWindowTitle('Attendance System') 
     widget.setFixedSize(770,570)
     widget.setCurrentIndex(widget.currentIndex()+1)
 
@@ -2206,16 +2179,14 @@ class SignUp(QMainWindow):
           )""")
 
           
-          #EIKHANEASHO
+          #import bcrypt
           hashed_pass = passwordsignup
-
           data = [(emailsignup,hashed_pass,namesignup,deptsignup,),]
 
           cc.executemany("INSERT INTO Teacher VALUES (?,?,?,?)", data)
 
           # cc.execute("SELECT * FROM Teacher")
           # var = cc.fetchall()
-
           # for item in var:
           #     data = item
           #     print(data[0]+" "+data[1]+" "+data[2]+" "+data[3])
@@ -2234,6 +2205,7 @@ class SignUp(QMainWindow):
           retval = msg.exec_()
 
           login = Login()
+          widget.setWindowTitle('Login')
           widget.addWidget(login)
           widget.setFixedSize(470,570)
           widget.setCurrentIndex(widget.currentIndex()+1)
@@ -2255,6 +2227,7 @@ class SignUp(QMainWindow):
 
   def backtologinFunction(self):
       login = Login()
+      widget.setWindowTitle('Login')
       widget.addWidget(login)
       widget.setFixedSize(470,570)
       widget.setCurrentIndex(widget.currentIndex()+1)
@@ -2265,12 +2238,8 @@ mainWindow = Login()
 
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(mainWindow)
-
-# widget.setWindowTitle('Login') # do this for al lthe other windows ???????????
-widget.setWindowTitle('') # do this for al lthe other windows ???????????
+widget.setWindowTitle('Login') 
 widget.setFixedSize(470,570)
-# widget.setMinimumSize(470,570) # w,h
-# widget.setMaximumSize(600,900) # w,h
 widget.show()
 
 try:
@@ -2279,3 +2248,4 @@ except :
   print("[LOG] Exiting the app... ")
 
 #kajkorseshob-blink_kaj_kore_final
+# mark attendance fixed

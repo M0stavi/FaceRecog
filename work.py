@@ -6,10 +6,10 @@ cc = conn.cursor()
 # cc.execute("DELETE FROM Course")
     
 # cc.execute("DELETE FROM Teacher")
-# cc.execute("DELETE FROM Student")
+#cc.execute("DELETE * FROM Student")
     
 # cc.execute("DELETE FROM Course_Alloc")
-# cc.execute("DELETE FROM Atten")
+#cc.execute("DELETE FROM Atten")
 
 
     
@@ -18,7 +18,15 @@ cc = conn.cursor()
     
 #cc.execute("DROP TABLE Course_Alloc")
 #cc.execute("DROP TABLE Course_Alloc")
-# cc.execute("DROP TABLE Atten")
+#cc.execute("DROP TABLE Student")
+# cc.execute("""
+#     CREATE TABLE Student (
+#         roll text,
+#         dept text,
+#         course_no text,
+#         img blob
+#     )
+# """)
 
       # cc.execute("DROP TABLE Course")
 # cc.execute("""
@@ -44,9 +52,17 @@ cc = conn.cursor()
 #               )
 #               """)
 
+# roll = "1707043"
+# data = [(roll)]
+# m = cc.execute("SELECT img FROM Student WHERE roll=?",data)
 
-conn.commit()
-conn.close()
+# for jj in m:
+#       img = jj
+#       break
+# img2=img[0]
+# print(img2)
+# conn.commit()
+# conn.close()
 
 # def initializedb():
 #     conn = sqlite3.connect("Attendance_System.db")
@@ -97,8 +113,8 @@ conn.close()
 #         data = item
 #         print(data[0]+" "+data[1]+" "+data[2]+" "+data[3])
 
-#     conn.commit()
-#     conn.close()
+conn.commit()
+conn.close()
 
 
 

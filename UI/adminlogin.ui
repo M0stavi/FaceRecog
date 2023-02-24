@@ -285,7 +285,7 @@ QPushButton#backtologin_btn:hover {
    <widget class="QPushButton" name="change_pass_btn">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>150</x>
       <y>520</y>
       <width>171</width>
       <height>31</height>

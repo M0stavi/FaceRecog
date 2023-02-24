@@ -241,9 +241,9 @@ QPushButton#addcourse_btn:hover {
    <widget class="QPushButton" name="delete_all_btn">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>40</x>
       <y>510</y>
-      <width>121</width>
+      <width>151</width>
       <height>41</height>
      </rect>
     </property>
@@ -270,7 +270,7 @@ QPushButton#delete_all_btn:hover {
 }</string>
     </property>
     <property name="text">
-     <string>Delete All</string>
+     <string>Delete All Students</string>
     </property>
     <property name="flat">
      <bool>true</bool>

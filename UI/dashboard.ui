@@ -45,10 +45,10 @@
    <widget class="QPushButton" name="markattendance_btn">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>300</y>
-      <width>151</width>
-      <height>80</height>
+      <x>70</x>
+      <y>280</y>
+      <width>121</width>
+      <height>121</height>
      </rect>
     </property>
     <property name="font">
@@ -76,7 +76,7 @@ QPushButton#markattendance_btn:hover {
 }</string>
     </property>
     <property name="text">
-     <string>Mark
+     <string>Take
 Attendance</string>
     </property>
     <property name="flat">
@@ -86,10 +86,10 @@ Attendance</string>
    <widget class="QPushButton" name="showattendance_btn">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>210</y>
-      <width>151</width>
-      <height>81</height>
+      <x>330</x>
+      <y>280</y>
+      <width>120</width>
+      <height>121</height>
      </rect>
     </property>
     <property name="font">
@@ -127,10 +127,10 @@ Attendance</string>
    <widget class="QPushButton" name="add_attendance_manually_btn">
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>120</y>
-      <width>151</width>
-      <height>81</height>
+      <x>200</x>
+      <y>280</y>
+      <width>120</width>
+      <height>121</height>
      </rect>
     </property>
     <property name="font">
@@ -169,7 +169,7 @@ Manually</string>
    <widget class="QPushButton" name="logout_btn">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>640</x>
       <y>490</y>
       <width>91</width>
       <height>41</height>
@@ -289,7 +289,7 @@ QPushButton#logout_btn:hover {
      <rect>
       <x>70</x>
       <y>170</y>
-      <width>351</width>
+      <width>381</width>
       <height>31</height>
      </rect>
     </property>
